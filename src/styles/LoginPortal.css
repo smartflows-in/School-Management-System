@@ -1,0 +1,316 @@
+.login-portal {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--gray-light) 0%, var(--secondary-blue) 100%);
+}
+
+/* Header */
+.portal-header {
+  background: var(--white);
+  box-shadow: var(--shadow);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.school-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.school-logo {
+  width: 60px;
+  height: 60px;
+  background: var(--primary-blue);
+  color: var(--white);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.school-info h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.school-info p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+/* Main Content */
+.portal-main {
+  padding: 4rem 0;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.welcome-section h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.welcome-section p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+}
+
+/* Login Grid */
+.login-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.login-card {
+  background: var(--white);
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-color);
+}
+
+.login-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+}
+
+.login-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.login-card p {
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.access-btn {
+  color: var(--accent-color);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.login-card:hover .access-btn {
+  transform: translateX(8px);
+}
+
+/* Admissions Section */
+.admissions-section {
+  padding: 2rem 0 4rem;
+}
+
+.admissions-banner {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+  border-radius: 16px;
+  padding: 3rem;
+  color: var(--white);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.banner-badge {
+  background: var(--accent-gold);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.banner-content h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.banner-content p {
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.banner-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.banner-stats {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Footer */
+.portal-footer {
+  background: var(--text-dark);
+  color: var(--white);
+  padding: 3rem 0 1rem;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-info h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.footer-info p {
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-links a {
+  color: var(--white);
+  opacity: 0.8;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+  text-align: center;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .admissions-banner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .banner-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .portal-main {
+    padding: 2rem 0;
+  }
+  
+  .welcome-section h2 {
+    font-size: 2rem;
+  }
+  
+  .login-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .admissions-banner {
+    padding: 2rem;
+  }
+  
+  .banner-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .school-brand {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admissions-banner {
+    padding: 1.5rem;
+  }
+  
+  .banner-actions {
+    flex-direction: column;
+  }
+  
+  .banner-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+}
