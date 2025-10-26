@@ -1,0 +1,851 @@
+/* Admissions.css */
+.admission-portal-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admission-portal-wrapper {
+  background: white;
+  padding: 0;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.admission-portal-header {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  padding: 40px;
+  text-align: center;
+}
+
+.admission-portal-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #fff, #e0e7ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.admission-portal-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* Step Indicators */
+.admission-steps-container {
+  padding: 30px 40px 0;
+  background: white;
+}
+
+.admission-steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.admission-steps-indicator::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.admission-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.admission-step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 3px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.admission-step-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+  text-align: center;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admission-step-active .admission-step-number {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: white;
+  transform: scale(1.1);
+}
+
+.admission-step-active .admission-step-label {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+/* Step Content */
+.admission-step-content {
+  padding: 0 40px 40px;
+  animation: admissionSlideUp 0.5s ease-out;
+}
+
+@keyframes admissionSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aadhaar Upload Card */
+.aadhaar-upload-card {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.aadhaar-upload-header {
+  text-align: center;
+  padding: 40px 40px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.aadhaar-upload-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.aadhaar-upload-header h3 {
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-size: 1.5rem;
+}
+
+.aadhaar-upload-header p {
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* Upload Options */
+.aadhaar-upload-options {
+  padding: 30px 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.upload-option-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-option-label {
+  display: block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-option-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 25px 20px;
+  text-align: center;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-option-label:hover .upload-option-card {
+  border-color: #4f46e5;
+  background: #f0f4ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.15);
+}
+
+.upload-option-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.upload-option-content h4 {
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.upload-option-content p {
+  color: #64748b;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.upload-option-hint {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.aadhaar-file-input {
+  display: none;
+}
+
+/* Aadhaar Image Preview */
+.aadhaar-image-preview {
+  margin: 0 40px 25px;
+  animation: admissionFadeIn 0.5s ease;
+}
+
+.preview-section-header {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.aadhaar-preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+/* Progress Bar */
+.aadhaar-progress-section {
+  margin: 0 40px 25px;
+  animation: admissionFadeIn 0.5s ease;
+}
+
+.aadhaar-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.aadhaar-progress-percent {
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.aadhaar-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.aadhaar-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  border-radius: 10px;
+  transition: width 0.4s ease;
+  position: relative;
+}
+
+.aadhaar-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: admissionShimmer 2s infinite;
+}
+
+@keyframes admissionShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Aadhaar Preview Card */
+.aadhaar-preview-card {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 0;
+  margin: 0 40px 25px;
+  animation: admissionSlideUp 0.5s ease;
+}
+
+.aadhaar-preview-header {
+  background: #0ea5e9;
+  color: white;
+  padding: 15px 20px;
+  margin: 0;
+  border-radius: 12px 12px 0 0;
+}
+
+.aadhaar-preview-header h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.aadhaar-preview-grid {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.aadhaar-preview-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.aadhaar-preview-fullwidth {
+  grid-column: 1 / -1;
+}
+
+.aadhaar-preview-item label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.aadhaar-preview-item span {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+/* Form Styles */
+.admission-form-card {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.admission-form-header {
+  padding: 40px 40px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admission-form-header h3 {
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-size: 1.5rem;
+}
+
+.admission-form-header p {
+  color: #64748b;
+}
+
+.admission-form-grid {
+  padding: 30px 40px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.admission-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.admission-form-fullwidth {
+  grid-column: 1 / -1;
+}
+
+.admission-form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.admission-required {
+  color: #ef4444;
+}
+
+.admission-form-input {
+  color: black;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  font-family: inherit;
+}
+
+.admission-form-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.admission-form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Student Photo Upload */
+.student-photo-upload-section {
+  padding: 0 40px 30px;
+}
+
+.student-photo-upload-area {
+  margin-top: 10px;
+}
+
+.student-photo-label {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.student-photo-placeholder {
+  width: 150px;
+  height: 180px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+  color: #64748b;
+}
+
+.student-photo-label:hover .student-photo-placeholder {
+  border-color: #4f46e5;
+  background: #f0f4ff;
+}
+
+.student-photo-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.student-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.student-photo-input {
+  display: none;
+}
+
+/* Buttons */
+.admission-btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+.admission-primary-btn {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.admission-primary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+}
+
+.admission-primary-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admission-download-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 15px 40px;
+  margin-top: 30px;
+}
+
+.admission-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+/* Messages */
+.admission-message {
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin: 20px 40px;
+  font-weight: 500;
+  animation: admissionFadeIn 0.5s ease;
+}
+
+@keyframes admissionFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admission-error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.admission-success-message {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+/* ID Card */
+.id-card-generation-section {
+  text-align: center;
+}
+
+.id-card-success-header {
+  margin-bottom: 40px;
+}
+
+.id-card-success-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.id-card-success-header h2 {
+  color: #1e293b;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.id-card-success-header p {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.student-id-card {
+  background: linear-gradient(135deg, #1e293b, #374151);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  margin: 0 auto;
+  color: white;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  min-height: 320px; /* Ensure minimum height */
+}
+
+.student-id-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed, #10b981);
+}
+
+.student-id-card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.student-id-school-logo {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-id-logo-placeholder {
+  font-size: 2rem;
+}
+
+.student-id-school-info h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.student-id-school-info p {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.student-id-card-body {
+  display: flex;
+  gap: 25px;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  min-height: 180px;
+}
+
+.student-id-photo-section {
+  flex-shrink: 0;
+}
+
+.student-id-photo-container {
+  position: relative;
+}
+
+.student-id-photo {
+  width: 120px;
+  height: 150px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.student-id-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ef4444;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.student-id-info-section {
+  flex: 1;
+}
+
+.student-id-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.student-id-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 20px;
+}
+
+.student-id-info-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.student-id-info-value {
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: right;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.student-id-blood-group {
+  background: #ef4444;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.student-id-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  min-height: 50px;
+}
+
+.student-id-validity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.student-id-signature-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.student-id-signature-line {
+  width: 100px;
+  height: 1px;
+  background: white;
+  margin-bottom: 2px;
+}
+
+.student-id-signature-section span {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admission-portal-container {
+    padding: 20px 15px;
+  }
+  
+  .admission-portal-wrapper {
+    border-radius: 16px;
+  }
+  
+  .admission-portal-header {
+    padding: 30px 20px;
+  }
+  
+  .admission-portal-title {
+    font-size: 2rem;
+  }
+  
+  .admission-steps-container {
+    padding: 20px 20px 0;
+  }
+  
+  .admission-steps-indicator::before {
+    left: 8%;
+    right: 8%;
+  }
+  
+  .admission-step-content {
+    padding: 0 20px 30px;
+  }
+  
+  .aadhaar-upload-options {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .aadhaar-image-preview,
+  .aadhaar-progress-section,
+  .aadhaar-preview-card,
+  .admission-message {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  
+  .admission-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .aadhaar-preview-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .student-id-card {
+    padding: 20px;
+    margin: 0 10px;
+  }
+  
+  .student-id-card-body {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .student-id-card-footer {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .student-id-card-header {
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .admission-steps-indicator::before {
+    display: none;
+  }
+  
+  .admission-step {
+    flex: none;
+    width: 20%;
+  }
+  
+  .admission-step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+  
+  .admission-step-label {
+    font-size: 0.75rem;
+  }
+  
+  .upload-option-card {
+    padding: 20px 15px;
+  }
+  
+  .upload-option-icon {
+    font-size: 2rem;
+  }
+}

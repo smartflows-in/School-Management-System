@@ -1,0 +1,154 @@
+.not-found {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.not-found-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  max-width: 1000px;
+  width: 100%;
+  align-items: center;
+}
+
+.not-found-content {
+  color: white;
+  text-align: left;
+}
+
+.error-code {
+  font-size: 120px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1;
+}
+
+.not-found-content h1 {
+  font-size: 36px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.not-found-content p {
+  font-size: 18px;
+  margin-bottom: 32px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background-color: white;
+  color: #667eea;
+}
+
+.btn-primary:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-secondary:hover {
+  background-color: white;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+.not-found-graphic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.book-stack {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.book {
+  position: absolute;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.book-1 {
+  width: 120px;
+  height: 160px;
+  top: 0;
+  left: 0;
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  transform: rotate(-5deg);
+}
+
+.book-2 {
+  width: 120px;
+  height: 160px;
+  top: 10px;
+  left: 40px;
+  background: linear-gradient(45deg, #4834d4, #686de0);
+  transform: rotate(2deg);
+}
+
+.book-3 {
+  width: 120px;
+  height: 160px;
+  top: 20px;
+  left: 80px;
+  background: linear-gradient(45deg, #00d2d3, #54a0ff);
+  transform: rotate(8deg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .not-found-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .error-code {
+    font-size: 80px;
+  }
+
+  .not-found-content h1 {
+    font-size: 28px;
+  }
+
+  .action-buttons {
+    justify-content: center;
+  }
+
+  .book-stack {
+    transform: scale(0.8);
+  }
+}
