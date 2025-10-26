@@ -1,0 +1,24 @@
+# Secrets (from earlier drama)
+Backend/serviceAccountKey.json
+.env
+*.pem
+*.key
+
+# Node/Dependencies (reinstall on deploy)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Builds/Output
+dist/
+build/
+*.log
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# If you have large assets (images/videos)
+# *.mp4  # Uncomment if needed
