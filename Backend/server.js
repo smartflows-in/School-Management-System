@@ -11,14 +11,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Option 1: Recommended - Add your Vercel frontend to allowed origins (keeps credentials: true for auth)
 app.use(cors({
   origin: [
     'https://schools.smartflows.in', // your frontend
+    'https://school-management-system-6y6i.vercel.app', // Add this: Your Vercel frontend
     'http://localhost:5173' // keep this for local testing
   ],
-
   credentials: true
 }));
+
+// Option 2: Permissive (for testing) - Allows all origins but drops credentials (uncomment if needed)
+// app.use(cors({
+//   origin: '*', // Allows requests from any domain
+//   credentials: false // Must set to false with '*' (no cookies/auth across origins)
+// }));
+
 app.use(express.json());
 
 app.use('/api/admin', adminRoutes);
