@@ -40,6 +40,11 @@ const Admissions = () => {
   const API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-aadhaar';
   const SUBMIT_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/submit';
 
+
+  // const API_URL = 'http://localhost:5000/api/admissions/extract-aadhaar';
+  // const SUBMIT_URL = 'http://localhost:5000/api/admissions/submit';
+
+
   const formatDob = (dobString) => {
     if (!dobString) return '';
     const parts = dobString.split('/');

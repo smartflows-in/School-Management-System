@@ -9,7 +9,7 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 // External API URL
-const EXTERNAL_API_URL = 'https://aadhar-extraction.onrender.com/api/v1/extract-aadhaar';
+const EXTERNAL_API_URL = 'http://3.110.94.123:8000/api/v1/extract-aadhaar';
 
 // POST /api/admissions/extract-aadhaar
 router.post('/extract-aadhaar', upload.single('file'), async (req, res) => {
