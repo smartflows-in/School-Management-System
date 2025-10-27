@@ -37,8 +37,8 @@ const Admissions = () => {
   const [showIdCard, setShowIdCard] = useState(false);
   const idCardRef = useRef(null);
 
-  const API_URL = 'https://school-management-system-website-backend.onrender.com/api/admissions/extract-aadhaar';
-  const SUBMIT_URL = 'https://school-management-system-website-backend.onrender.com/api/admissions/submit';
+  const API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-aadhaar';
+  const SUBMIT_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/submit';
 
   const formatDob = (dobString) => {
     if (!dobString) return '';

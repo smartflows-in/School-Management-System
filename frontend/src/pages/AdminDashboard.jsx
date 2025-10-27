@@ -46,7 +46,7 @@ const AdminDashboard = () => {
       }
       try {
         console.log('Fetching admin dashboard...');
-        const response = await fetch('https://school-management-system-website-backend.onrender.com/api/admin/dashboard', {
+        const response = await fetch('https://school-management-system-toqs.onrender.com/api/admin/dashboard', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const result = await response.json();
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
     setCreateError('');
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('https://school-management-system-website-backend.onrender.com/api/admin/create-user', {
+      const response = await fetch('https://school-management-system-toqs.onrender.com/api/admin/create-user', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
