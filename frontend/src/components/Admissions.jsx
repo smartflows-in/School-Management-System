@@ -42,9 +42,18 @@ const Admissions = () => {
   const [showIdCard, setShowIdCard] = useState(false);
   const idCardRef = useRef(null);
 
-  const API_URL = 'http://localhost:5000/api/admissions/extract-aadhaar';
-  const LEAVING_CERT_API_URL = 'http://localhost:5000/api/admissions/extract-leaving-certificate';
-  const SUBMIT_URL = 'http://localhost:5000/api/admissions/submit';
+  // const API_URL = 'http://localhost:5000/api/admissions/extract-aadhaar';
+  // const LEAVING_CERT_API_URL = 'http://localhost:5000/api/admissions/extract-leaving-certificate';
+  // const SUBMIT_URL = 'http://localhost:5000/api/admissions/submit';
+
+
+
+ const API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-aadhaar';
+  const LEAVING_CERT_API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-leaving-certificate';
+  const SUBMIT_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/submit';
+
+
+
 
   const formatDob = (dobString) => {
     if (!dobString) return '';
