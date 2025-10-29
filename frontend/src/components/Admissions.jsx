@@ -23,7 +23,35 @@ const Admissions = () => {
     phone: '',
     class_grade: '',
     school_name: '',
-    last_class_attended: ''
+    last_class_attended: '',
+    // Extra fields from leaving certificate – comment out any you don't need
+    book_number: '',
+    serial_number: '',
+    admission_number: '',
+    student_name: '', // Note: this may overlap with Aadhaar student name
+    father_name_lc: '', // Renamed to avoid conflict with father's Aadhaar
+    mother_name_lc: '', // Renamed to avoid conflict with mother's Aadhaar
+    nationality: '',
+    belongs_to_sc_st: '',
+    date_of_first_admission: '',
+    class_at_first_admission: '',
+    date_of_birth_lc: '', // Renamed to avoid conflict with student's DOB
+    date_of_birth_in_words: '',
+    school_board_exam_result: '',
+    failed_status: '',
+    subjects_studied: [], // This is an array
+    promoted_to_higher_class: '',
+    school_dues_paid_up_to: '',
+    fee_concession: '',
+    total_working_days: '',
+    total_working_days_present: '',
+    ncc_cadet_boys_scout_girl_guide: '',
+    extracurricular_activities: '',
+    general_conduct: '',
+    date_of_application_for_certificate: '',
+    date_of_issue_of_certificate: '',
+    reason_for_leaving: '',
+    other_remarks: ''
   });
 
   const [studentAadhaarImage, setStudentAadhaarImage] = useState(null);
@@ -46,14 +74,9 @@ const Admissions = () => {
   // const LEAVING_CERT_API_URL = 'http://localhost:5000/api/admissions/extract-leaving-certificate';
   // const SUBMIT_URL = 'http://localhost:5000/api/admissions/submit';
 
-
-
- const API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-aadhaar';
-  const LEAVING_CERT_API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-leaving-certificate';
-  const SUBMIT_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/submit';
-
-
-
+   const API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-aadhaar';
+    const LEAVING_CERT_API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-leaving-certificate';
+    const SUBMIT_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/submit';
 
   const formatDob = (dobString) => {
     if (!dobString) return '';
@@ -190,9 +213,37 @@ const Admissions = () => {
       clearInterval(processInterval);
 
       if (result.success) {
+        // Extract all fields, including extras – comment out lines below for fields you don't need
         const extractedData = {
           school_name: result.data.school_name || '',
           last_class_attended: result.data.last_class_attended || '',
+          book_number: result.data.book_number || '',
+          serial_number: result.data.serial_number || '',
+          admission_number: result.data.admission_number || '',
+          student_name: result.data.student_name || '',
+          father_name_lc: result.data.father_name || '', // Renamed to avoid conflict
+          mother_name_lc: result.data.mother_name || '', // Renamed to avoid conflict
+          nationality: result.data.nationality || '',
+          belongs_to_sc_st: result.data.belongs_to_sc_st || '',
+          date_of_first_admission: result.data.date_of_first_admission || '',
+          class_at_first_admission: result.data.class_at_first_admission || '',
+          date_of_birth_lc: result.data.date_of_birth || '', // Renamed to avoid conflict
+          date_of_birth_in_words: result.data.date_of_birth_in_words || '',
+          school_board_exam_result: result.data.school_board_exam_result || '',
+          failed_status: result.data.failed_status || '',
+          subjects_studied: result.data.subjects_studied || [],
+          promoted_to_higher_class: result.data.promoted_to_higher_class || '',
+          school_dues_paid_up_to: result.data.school_dues_paid_up_to || '',
+          fee_concession: result.data.fee_concession || '',
+          total_working_days: result.data.total_working_days || '',
+          total_working_days_present: result.data.total_working_days_present || '',
+          ncc_cadet_boys_scout_girl_guide: result.data.ncc_cadet_boys_scout_girl_guide || '',
+          extracurricular_activities: result.data.extracurricular_activities || '',
+          general_conduct: result.data.general_conduct || '',
+          date_of_application_for_certificate: result.data.date_of_application_for_certificate || '',
+          date_of_issue_of_certificate: result.data.date_of_issue_of_certificate || '',
+          reason_for_leaving: result.data.reason_for_leaving || '',
+          other_remarks: result.data.other_remarks || ''
         };
         setFormData(prev => ({ ...prev, ...extractedData }));
         setProgress(100);
@@ -720,6 +771,11 @@ const Admissions = () => {
                       <label>Last Class</label>
                       <span>{formData.last_class_attended || '—'}</span>
                     </div>
+                    {/* Add more preview items here if needed, e.g.: */}
+                    {/* <div className="aadhaar-preview-item">
+                      <label>Book Number</label>
+                      <span>{formData.book_number || '—'}</span>
+                    </div> */}
                   </div>
                 </div>
               )}
@@ -774,6 +830,8 @@ const Admissions = () => {
                       <div className="student-id-info-row"><span className="student-id-info-label">Last Class:</span><span className="student-id-info-value">{formData.last_class_attended}</span></div>
                       <div className="student-id-info-row"><span className="student-id-info-label">Blood:</span><span className="student-id-info-value student-id-blood-group">{formData.blood_group}</span></div>
                       <div className="student-id-info-row"><span className="student-id-info-label">Class:</span><span className="student-id-info-value">{formData.class_grade}</span></div>
+                      {/* Add more ID card rows here if needed, e.g.: */}
+                      {/* <div className="student-id-info-row"><span className="student-id-info-label">Nationality:</span><span className="student-id-info-value">{formData.nationality}</span></div> */}
                     </div>
                   </div>
                 </div>
