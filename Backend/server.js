@@ -6,39 +6,54 @@ const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
 const admissionsRoutes = require('./routes/admissionsRoutes'); // Existing admissions routes (e.g., extraction)
-const submitToSheetRoutes = require('./routes/submitToSheet'); // NEW: Import the sheet submission proxy
+const submitToSheetRoutes = require('./routes/submitToSheet'); // Sheet submission proxy
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Your existing CORS config (good for localhost and prod)
-app.use(cors({
-  origin: [
-    'https://schools.smartflows.in', // your frontend
-    'http://localhost:5173' // keep this for local testing
-  ],
-  credentials: true
-}));
+// Enhanced CORS config for Render/Prod
+const allowedOrigins = [
+  'https://schools.smartflows.in', // Prod frontend
+  'http://localhost:5173' // Local dev
+];
 
-app.use(express.json());
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true); // Allow the origin
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`); // Log blocked attempts
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Keep for cookies/auth if needed
+  methods: ['GET', 'POST', 'OPTIONS'], // Explicit for preflights/uploads
+  allowedHeaders: ['Content-Type', 'Authorization'], // For FormData/JSON
+  preflightContinue: false,
+  optionsSuccessStatus: 204 // Some legacy browsers choke on 204
+};
+
+// Apply CORS globally
+app.use(cors(corsOptions));
+
+// Handle preflight OPTIONS explicitly (fallback for Render quirks)
+app.options('*', cors(corsOptions));
+
+// Your existing middleware
+app.use(express.json({ limit: '50mb' })); // Increase for images if needed
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Your existing routes
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
-app.use('/api/admissions', admissionsRoutes); // Existing (e.g., extract-aadhaar, extract-leaving-certificate)
-
-// NEW: Mount the submit-to-sheet route under /api/admissions
-app.use('/api/admissions', submitToSheetRoutes);
+app.use('/api/admissions', admissionsRoutes); // Existing (extraction)
+app.use('/api/admissions', submitToSheetRoutes); // Submit proxy
 
 app.get('/', (req, res) => res.send('Backend running with Firebase!'));
-
-// Your existing OCR timeout or other configs can go here if needed, e.g.:
-// app.use((req, res, next) => {
-//   req.setTimeout(OCR_TIMEOUT_MS); // Assuming OCR_TIMEOUT_MS is defined
-//   next();
-// });
 
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
