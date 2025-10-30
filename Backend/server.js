@@ -36,11 +36,8 @@ const corsOptions = {
   optionsSuccessStatus: 204 // Some legacy browsers choke on 204
 };
 
-// Apply CORS globally
+// Apply CORS globally (handles OPTIONS preflights automatically—no need for app.options('*'))
 app.use(cors(corsOptions));
-
-// Handle preflight OPTIONS explicitly (fallback for Render quirks)
-app.options('*', cors(corsOptions));
 
 // Your existing middleware
 app.use(express.json({ limit: '50mb' })); // Increase for images if needed
