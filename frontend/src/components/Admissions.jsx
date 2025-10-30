@@ -69,15 +69,20 @@ const Admissions = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showIdCard, setShowIdCard] = useState(false);
   const idCardRef = useRef(null);
+// Base backend URL (switches local/prod automatically)
+  const isDev = import.meta.env.DEV; // Vite's built-in dev mode detector
+  const BASE_BACKEND_URL = isDev ? 'http://localhost:5000' : 'https://school-management-system-toqs.onrender.com';
 
-  // const API_URL = 'http://localhost:5000/api/admissions/extract-aadhaar';
-  // const LEAVING_CERT_API_URL = 'http://localhost:5000/api/admissions/extract-leaving-certificate';
-  // const SUBMIT_URL = 'http://localhost:5000/api/admissions/submit';
+  // All URLs now conditional
+  const API_URL = `${BASE_BACKEND_URL}/api/admissions/extract-aadhaar`;
+  const LEAVING_CERT_API_URL = `${BASE_BACKEND_URL}/api/admissions/extract-leaving-certificate`;
+  const SUBMIT_URL = `${BASE_BACKEND_URL}/api/admissions/submit-to-sheet`;
 
-   const API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-aadhaar';
-    const LEAVING_CERT_API_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/extract-leaving-certificate';
-    const SUBMIT_URL = 'https://school-management-system-toqs.onrender.com/api/admissions/submit';
+  // Debug log: Check which URL is being used
+  console.log('Backend URLs in use:', { isDev, BASE_BACKEND_URL, API_URL, LEAVING_CERT_API_URL, SUBMIT_URL });
 
+
+  
   const formatDob = (dobString) => {
     if (!dobString) return '';
     const parts = dobString.split('/');
@@ -309,8 +314,13 @@ const Admissions = () => {
 
       if (!response.ok) throw new Error(`Submit Error: ${response.status}`);
 
-      setShowIdCard(true);
-      setSuccessMessage('Application submitted! ID Card generated below.');
+      const result = await response.json();
+      if (result.success) {
+        setShowIdCard(true);
+        setSuccessMessage('Application submitted! Data saved to records and confirmation email sent. ID Card generated below.');
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
