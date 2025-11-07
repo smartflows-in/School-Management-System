@@ -107,147 +107,114 @@ const Admissions = () => {
     }
   };
 
+  useEffect(() => {
+    const video = videoRef.current;
+    const overlay = overlayRef.current;
+    if (!showCamera || !video || !overlay) return;
 
+    let stream = null;
+    let rafId = null;
+    const startCamera = async () => {
+      try {
+        const facingMode = 'environment'; // Use back camera for documents
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+        video.srcObject = stream;
+      } catch (err) {
+        console.error('Camera access error:', err);
+        setError('Unable to access camera: ' + err.message + '. Please check permissions and try again.');
+        setShowCamera(false);
+      }
+    };
 
+    const drawOverlay = () => {
+      if (!video.videoWidth || !overlay) return;
+      overlay.width = video.videoWidth;
+      overlay.height = video.videoHeight;
 
+      const ctx = overlay.getContext('2d');
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
 
+      // Draw semi-transparent overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, overlay.width, overlay.height);
 
+      // *** CUSTOMIZE BOX SIZE HERE: Base scale (0.7 = 70% of video area) ***
+      let boxScale = 0.7; // Default scale - increase (0.8) for larger box, decrease (0.5) for smaller
 
+      // *** MOBILE DETECTION: Override scale/height/width for mobile (e.g., larger on small screens) ***
+      // Uncomment and adjust the if-block below to make box taller/wider on mobile
+      if (window.innerWidth <= 480) { // Detect mobile
+        boxScale = 0.8; // Larger scale for mobile (e.g., 80% instead of 70% for taller box)
+        // For fixed pixel height/width: let boxHeight = 300; let boxWidth = 475; (then skip ratio calc)
+      }
 
+      // *** ASPECT RATIO: Locks width:height (1.586 for Aadhaar; 1.0 for square) ***
+      const customAspectRatio = AADHAAR_ASPECT_RATIO; // Change to 1.0 for square, or 1.2 for taller
 
+      // Calculate dimensions (width first, then height based on ratio)
+      let boxWidth = Math.min(video.videoWidth * boxScale, video.videoHeight * boxScale * customAspectRatio);
+      let boxHeight = boxWidth / customAspectRatio;
 
-useEffect(() => {
-  const video = videoRef.current;
-  const overlay = overlayRef.current;
-  if (!showCamera || !video || !overlay) return;
+      // *** SAFETY CHECK: Ensure box fits video (optional) ***
+      if (boxHeight > video.videoHeight * boxScale) {
+        boxHeight = video.videoHeight * boxScale;
+        boxWidth = boxHeight * customAspectRatio;
+      }
 
-  let stream = null;
-  let rafId = null;
-  const startCamera = async () => {
-    try {
-      const facingMode = 'environment'; // Use back camera for documents
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
-      video.srcObject = stream;
-    } catch (err) {
-      console.error('Camera access error:', err);
-      setError('Unable to access camera: ' + err.message + '. Please check permissions and try again.');
-      setShowCamera(false);
-    }
-  };
+      // *** POSITIONING: Center the box (adjust x/y for offsets, e.g., x=50 for right-shifted) ***
+      const x = (video.videoWidth - boxWidth) / 2;
+      const y = (video.videoHeight - boxHeight) / 2;
 
-  const drawOverlay = () => {
-    if (!video.videoWidth || !overlay) return;
-    overlay.width = video.videoWidth;
-    overlay.height = video.videoHeight;
+      // Clear the box area (make transparent)
+      ctx.clearRect(x, y, boxWidth, boxHeight);
 
-    const ctx = overlay.getContext('2d');
-    ctx.clearRect(0, 0, overlay.width, overlay.height);
+      // Draw border for the box
+      ctx.strokeStyle = '#00ff00';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, boxWidth, boxHeight);
 
-    // Draw semi-transparent overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, overlay.width, overlay.height);
+      // Add corner markers (optional - remove if not needed)
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 30, y);
+      ctx.moveTo(x + boxWidth - 30, y);
+      ctx.lineTo(x + boxWidth, y);
+      ctx.moveTo(x, y + boxHeight);
+      ctx.lineTo(x + 30, y + boxHeight);
+      ctx.moveTo(x + boxWidth - 30, y + boxHeight);
+      ctx.lineTo(x + boxWidth, y + boxHeight);
+      ctx.strokeStyle = '#00ff00';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-    // *** CUSTOMIZE BOX SIZE HERE: Base scale (0.7 = 70% of video area) ***
-    let boxScale = 0.7; // Default scale - increase (0.8) for larger box, decrease (0.5) for smaller
+      // Store box coords for cropping
+      video._cropBox = { x, y, width: boxWidth, height: boxHeight };
+    };
 
-    // *** MOBILE DETECTION: Override scale/height/width for mobile (e.g., larger on small screens) ***
-    // Uncomment and adjust the if-block below to make box taller/wider on mobile
-    /*
-    if (window.innerWidth <= 480) { // Detect mobile
-      boxScale = 0.75; // Larger scale for mobile (e.g., 75% instead of 70%)
-      // For fixed pixel height/width: let boxHeight = 250; let boxWidth = 400; (then skip ratio calc)
-    }
-    */
+    const animate = () => {
+      drawOverlay();
+      rafId = requestAnimationFrame(animate);
+    };
 
-    // *** ASPECT RATIO: Locks width:height (1.586 for Aadhaar; 1.0 for square) ***
-    const customAspectRatio = AADHAAR_ASPECT_RATIO; // Change to 1.0 for square, or 1.2 for taller
+    startCamera();
 
-    // Calculate dimensions (width first, then height based on ratio)
-    let boxWidth = Math.min(video.videoWidth * boxScale, video.videoHeight * boxScale * customAspectRatio);
-    let boxHeight = boxWidth / customAspectRatio;
+    const handleLoadedData = () => {
+      video.play();
+      animate();
+    };
 
-    // *** SAFETY CHECK: Ensure box fits video (optional) ***
-    if (boxHeight > video.videoHeight * boxScale) {
-      boxHeight = video.videoHeight * boxScale;
-      boxWidth = boxHeight * customAspectRatio;
-    }
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('resize', drawOverlay);
 
-    // *** POSITIONING: Center the box (adjust x/y for offsets, e.g., x=50 for right-shifted) ***
-    const x = (video.videoWidth - boxWidth) / 2;
-    const y = (video.videoHeight - boxHeight) / 2;
-
-    // Clear the box area (make transparent)
-    ctx.clearRect(x, y, boxWidth, boxHeight);
-
-    // Draw border for the box
-    ctx.strokeStyle = '#00ff00';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(x, y, boxWidth, boxHeight);
-
-    // Add corner markers (optional - remove if not needed)
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + 30, y);
-    ctx.moveTo(x + boxWidth - 30, y);
-    ctx.lineTo(x + boxWidth, y);
-    ctx.moveTo(x, y + boxHeight);
-    ctx.lineTo(x + 30, y + boxHeight);
-    ctx.moveTo(x + boxWidth - 30, y + boxHeight);
-    ctx.lineTo(x + boxWidth, y + boxHeight);
-    ctx.strokeStyle = '#00ff00';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Store box coords for cropping
-    video._cropBox = { x, y, width: boxWidth, height: boxHeight };
-  };
-
-  const animate = () => {
-    drawOverlay();
-    rafId = requestAnimationFrame(animate);
-  };
-
-  startCamera();
-
-  const handleLoadedData = () => {
-    video.play();
-    animate();
-  };
-
-  video.addEventListener('loadeddata', handleLoadedData);
-  video.addEventListener('resize', drawOverlay);
-
-  return () => {
-    video.removeEventListener('loadeddata', handleLoadedData);
-    video.removeEventListener('resize', drawOverlay);
-    if (rafId) cancelAnimationFrame(rafId);
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
-  };
-}, [showCamera, currentCaptureRole]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return () => {
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('resize', drawOverlay);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [showCamera, currentCaptureRole]);
 
   const handleCameraCapture = (role) => {
     setCurrentCaptureRole(role);
