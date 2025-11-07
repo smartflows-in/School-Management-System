@@ -107,96 +107,147 @@ const Admissions = () => {
     }
   };
 
-  useEffect(() => {
-    const video = videoRef.current;
-    const overlay = overlayRef.current;
-    if (!showCamera || !video || !overlay) return;
 
-    let stream = null;
-    let rafId = null;
-    const startCamera = async () => {
-      try {
-        const facingMode = 'environment'; // Use back camera for documents
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
-        video.srcObject = stream;
-      } catch (err) {
-        console.error('Camera access error:', err);
-        setError('Unable to access camera: ' + err.message + '. Please check permissions and try again.');
-        setShowCamera(false);
-      }
-    };
 
-    const drawOverlay = () => {
-      if (!video.videoWidth || !overlay) return;
-      overlay.width = video.videoWidth;
-      overlay.height = video.videoHeight;
 
-      const ctx = overlay.getContext('2d');
-      ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-      // Draw semi-transparent overlay
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.fillRect(0, 0, overlay.width, overlay.height);
 
-      // Calculate box dimensions for Aadhaar (for leaving cert, we can adjust but keeping same for simplicity)
-      const boxScale = 0.7; // 70% of video size
-      let boxWidth = Math.min(video.videoWidth * boxScale, video.videoHeight * boxScale * AADHAAR_ASPECT_RATIO);
-      let boxHeight = boxWidth / AADHAAR_ASPECT_RATIO;
 
-      // Center the box
-      const x = (video.videoWidth - boxWidth) / 2;
-      const y = (video.videoHeight - boxHeight) / 2;
 
-      // Clear the box area (make transparent)
-      ctx.clearRect(x, y, boxWidth, boxHeight);
 
-      // Draw border for the box
-      ctx.strokeStyle = '#00ff00';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(x, y, boxWidth, boxHeight);
 
-      // Add corner markers or lines if desired
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + 30, y);
-      ctx.moveTo(x + boxWidth - 30, y);
-      ctx.lineTo(x + boxWidth, y);
-      ctx.moveTo(x, y + boxHeight);
-      ctx.lineTo(x + 30, y + boxHeight);
-      ctx.moveTo(x + boxWidth - 30, y + boxHeight);
-      ctx.lineTo(x + boxWidth, y + boxHeight);
-      ctx.strokeStyle = '#00ff00';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+useEffect(() => {
+  const video = videoRef.current;
+  const overlay = overlayRef.current;
+  if (!showCamera || !video || !overlay) return;
 
-      // Store box coords for cropping
-      video._cropBox = { x, y, width: boxWidth, height: boxHeight };
-    };
+  let stream = null;
+  let rafId = null;
+  const startCamera = async () => {
+    try {
+      const facingMode = 'environment'; // Use back camera for documents
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+      video.srcObject = stream;
+    } catch (err) {
+      console.error('Camera access error:', err);
+      setError('Unable to access camera: ' + err.message + '. Please check permissions and try again.');
+      setShowCamera(false);
+    }
+  };
 
-    const animate = () => {
-      drawOverlay();
-      rafId = requestAnimationFrame(animate);
-    };
+  const drawOverlay = () => {
+    if (!video.videoWidth || !overlay) return;
+    overlay.width = video.videoWidth;
+    overlay.height = video.videoHeight;
 
-    startCamera();
+    const ctx = overlay.getContext('2d');
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-    const handleLoadedData = () => {
-      video.play();
-      animate();
-    };
+    // Draw semi-transparent overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, overlay.width, overlay.height);
 
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.addEventListener('resize', drawOverlay);
+    // *** CUSTOMIZE BOX SIZE HERE: Base scale (0.7 = 70% of video area) ***
+    let boxScale = 0.7; // Default scale - increase (0.8) for larger box, decrease (0.5) for smaller
 
-    return () => {
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('resize', drawOverlay);
-      if (rafId) cancelAnimationFrame(rafId);
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [showCamera, currentCaptureRole]);
+    // *** MOBILE DETECTION: Override scale/height/width for mobile (e.g., larger on small screens) ***
+    // Uncomment and adjust the if-block below to make box taller/wider on mobile
+    /*
+    if (window.innerWidth <= 480) { // Detect mobile
+      boxScale = 0.75; // Larger scale for mobile (e.g., 75% instead of 70%)
+      // For fixed pixel height/width: let boxHeight = 250; let boxWidth = 400; (then skip ratio calc)
+    }
+    */
+
+    // *** ASPECT RATIO: Locks width:height (1.586 for Aadhaar; 1.0 for square) ***
+    const customAspectRatio = AADHAAR_ASPECT_RATIO; // Change to 1.0 for square, or 1.2 for taller
+
+    // Calculate dimensions (width first, then height based on ratio)
+    let boxWidth = Math.min(video.videoWidth * boxScale, video.videoHeight * boxScale * customAspectRatio);
+    let boxHeight = boxWidth / customAspectRatio;
+
+    // *** SAFETY CHECK: Ensure box fits video (optional) ***
+    if (boxHeight > video.videoHeight * boxScale) {
+      boxHeight = video.videoHeight * boxScale;
+      boxWidth = boxHeight * customAspectRatio;
+    }
+
+    // *** POSITIONING: Center the box (adjust x/y for offsets, e.g., x=50 for right-shifted) ***
+    const x = (video.videoWidth - boxWidth) / 2;
+    const y = (video.videoHeight - boxHeight) / 2;
+
+    // Clear the box area (make transparent)
+    ctx.clearRect(x, y, boxWidth, boxHeight);
+
+    // Draw border for the box
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, boxWidth, boxHeight);
+
+    // Add corner markers (optional - remove if not needed)
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 30, y);
+    ctx.moveTo(x + boxWidth - 30, y);
+    ctx.lineTo(x + boxWidth, y);
+    ctx.moveTo(x, y + boxHeight);
+    ctx.lineTo(x + 30, y + boxHeight);
+    ctx.moveTo(x + boxWidth - 30, y + boxHeight);
+    ctx.lineTo(x + boxWidth, y + boxHeight);
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Store box coords for cropping
+    video._cropBox = { x, y, width: boxWidth, height: boxHeight };
+  };
+
+  const animate = () => {
+    drawOverlay();
+    rafId = requestAnimationFrame(animate);
+  };
+
+  startCamera();
+
+  const handleLoadedData = () => {
+    video.play();
+    animate();
+  };
+
+  video.addEventListener('loadeddata', handleLoadedData);
+  video.addEventListener('resize', drawOverlay);
+
+  return () => {
+    video.removeEventListener('loadeddata', handleLoadedData);
+    video.removeEventListener('resize', drawOverlay);
+    if (rafId) cancelAnimationFrame(rafId);
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+  };
+}, [showCamera, currentCaptureRole]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleCameraCapture = (role) => {
     setCurrentCaptureRole(role);

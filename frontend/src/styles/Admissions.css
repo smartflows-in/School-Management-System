@@ -868,8 +868,6 @@
 
 
 
-
-
 /* Camera Modal Styles */
 .camera-modal-overlay {
   position: fixed;
@@ -926,7 +924,7 @@
 .camera-video-container {
   position: relative;
   width: 100%;
-  height: 300px; /* Fixed height for consistency */
+  height: 300px; /* Desktop height - adjust here for base size */
   overflow: hidden;
   background: black;
 }
@@ -990,17 +988,27 @@
   background: #cbd5e1;
 }
 
+/* Mobile Responsive - Larger height for better cropping on small screens */
 @media (max-width: 480px) {
   .camera-modal-content {
     width: 95vw;
-    height: 80vh;
+    height: 85vh; /* Increased modal height for mobile to accommodate taller video */
   }
 
   .camera-video-container {
-    height: 250px;
+    height: 350px; /* *** MOBILE HEIGHT: Increase this for taller video/box (e.g., 400px for even larger) */
+    /* *** MOBILE WIDTH: Already 100%, but add 'width: 95vw;' if you want narrower */
   }
 
   .camera-controls {
     flex-direction: column;
   }
 }
+
+/* Optional: Tablet breakpoint for medium sizes */
+@media (max-width: 768px) and (min-width: 481px) {
+  .camera-video-container {
+    height: 320px; /* *** TABLET HEIGHT: Adjust here if needed (e.g., 280px for shorter) */
+  }
+}
+
