@@ -992,11 +992,11 @@
 @media (max-width: 480px) {
   .camera-modal-content {
     width: 95vw;
-    height: 85vh; /* Increased modal height for mobile to accommodate taller video */
+    height: 90vh; /* Increased modal height for mobile to accommodate taller video */
   }
 
   .camera-video-container {
-    height: 400px; /* *** MOBILE HEIGHT: Increased to 400px for taller green box (change to 450px for even more) */
+    height: 400px; /* *** MOBILE HEIGHT: Further increased to 400px for even taller video/box */
     /* *** MOBILE WIDTH: Already 100%, but add 'width: 95vw;' if you want narrower */
   }
 

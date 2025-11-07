@@ -144,7 +144,7 @@ const Admissions = () => {
       // *** MOBILE DETECTION: Override scale/height/width for mobile (e.g., larger on small screens) ***
       // Uncomment and adjust the if-block below to make box taller/wider on mobile
       if (window.innerWidth <= 480) { // Detect mobile
-        boxScale = 0.8; // Larger scale for mobile (e.g., 80% instead of 70% for taller box)
+        boxScale = 0.9; // Larger scale for mobile (e.g., 80% instead of 70% for taller box)
         // For fixed pixel height/width: let boxHeight = 300; let boxWidth = 475; (then skip ratio calc)
       }
 
