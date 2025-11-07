@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../styles/Admissions.css';
@@ -68,8 +68,12 @@ const Admissions = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [showIdCard, setShowIdCard] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [currentCaptureRole, setCurrentCaptureRole] = useState('');
   const idCardRef = useRef(null);
-// Base backend URL (switches local/prod automatically)
+  const videoRef = useRef(null);
+  const overlayRef = useRef(null);
+  // Base backend URL (switches local/prod automatically)
   const isDev = import.meta.env.DEV; // Vite's built-in dev mode detector
   const BASE_BACKEND_URL = isDev ? 'http://localhost:5000' : 'https://school-management-system-toqs.onrender.com';
 
@@ -81,8 +85,184 @@ const Admissions = () => {
   // Debug log: Check which URL is being used
   console.log('Backend URLs in use:', { isDev, BASE_BACKEND_URL, API_URL, LEAVING_CERT_API_URL, SUBMIT_URL });
 
+  const AADHAAR_ASPECT_RATIO = 85.6 / 53.98; // Approx 1.586 for Aadhaar card
 
-  
+  const getRoleDisplay = (role) => {
+    switch (role) {
+      case 'student': return 'Student Aadhaar';
+      case 'father': return "Father's Aadhaar";
+      case 'mother': return "Mother's Aadhaar";
+      case 'leaving': return 'Leaving Certificate';
+      default: return 'Document';
+    }
+  };
+
+  const getSuccessMsg = (role) => {
+    switch (role) {
+      case 'student': return 'Aadhaar details extracted successfully!';
+      case 'father': return "Father's Aadhaar details extracted successfully!";
+      case 'mother': return "Mother's Aadhaar details extracted successfully!";
+      case 'leaving': return 'Leaving certificate details extracted successfully!';
+      default: return 'Details extracted successfully!';
+    }
+  };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const overlay = overlayRef.current;
+    if (!showCamera || !video || !overlay) return;
+
+    let stream = null;
+    let rafId = null;
+    const startCamera = async () => {
+      try {
+        const facingMode = 'environment'; // Use back camera for documents
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+        video.srcObject = stream;
+      } catch (err) {
+        console.error('Camera access error:', err);
+        setError('Unable to access camera: ' + err.message + '. Please check permissions and try again.');
+        setShowCamera(false);
+      }
+    };
+
+    const drawOverlay = () => {
+      if (!video.videoWidth || !overlay) return;
+      overlay.width = video.videoWidth;
+      overlay.height = video.videoHeight;
+
+      const ctx = overlay.getContext('2d');
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+      // Draw semi-transparent overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, overlay.width, overlay.height);
+
+      // Calculate box dimensions for Aadhaar (for leaving cert, we can adjust but keeping same for simplicity)
+      const boxScale = 0.7; // 70% of video size
+      let boxWidth = Math.min(video.videoWidth * boxScale, video.videoHeight * boxScale * AADHAAR_ASPECT_RATIO);
+      let boxHeight = boxWidth / AADHAAR_ASPECT_RATIO;
+
+      // Center the box
+      const x = (video.videoWidth - boxWidth) / 2;
+      const y = (video.videoHeight - boxHeight) / 2;
+
+      // Clear the box area (make transparent)
+      ctx.clearRect(x, y, boxWidth, boxHeight);
+
+      // Draw border for the box
+      ctx.strokeStyle = '#00ff00';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, boxWidth, boxHeight);
+
+      // Add corner markers or lines if desired
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 30, y);
+      ctx.moveTo(x + boxWidth - 30, y);
+      ctx.lineTo(x + boxWidth, y);
+      ctx.moveTo(x, y + boxHeight);
+      ctx.lineTo(x + 30, y + boxHeight);
+      ctx.moveTo(x + boxWidth - 30, y + boxHeight);
+      ctx.lineTo(x + boxWidth, y + boxHeight);
+      ctx.strokeStyle = '#00ff00';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Store box coords for cropping
+      video._cropBox = { x, y, width: boxWidth, height: boxHeight };
+    };
+
+    const animate = () => {
+      drawOverlay();
+      rafId = requestAnimationFrame(animate);
+    };
+
+    startCamera();
+
+    const handleLoadedData = () => {
+      video.play();
+      animate();
+    };
+
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('resize', drawOverlay);
+
+    return () => {
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('resize', drawOverlay);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [showCamera, currentCaptureRole]);
+
+  const handleCameraCapture = (role) => {
+    setCurrentCaptureRole(role);
+    setShowCamera(true);
+    setError('');
+    setProgress(0);
+  };
+
+  const handleTakePhoto = async () => {
+    const video = videoRef.current;
+    if (!video || video.videoWidth === 0) {
+      setError('Camera not ready. Please wait a moment and try again.');
+      return;
+    }
+
+    if (!video._cropBox) {
+      setError('Overlay not ready. Please wait.');
+      return;
+    }
+
+    const { x, y, width: boxWidth, height: boxHeight } = video._cropBox;
+
+    // Create temp canvas for full frame
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Create cropped canvas
+    const croppedCanvas = document.createElement('canvas');
+    croppedCanvas.width = boxWidth;
+    croppedCanvas.height = boxHeight;
+    const croppedCtx = croppedCanvas.getContext('2d');
+    croppedCtx.drawImage(tempCanvas, x, y, boxWidth, boxHeight, 0, 0, boxWidth, boxHeight);
+
+    const dataURL = croppedCanvas.toDataURL('image/jpeg', 0.8);
+    croppedCanvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], `${currentCaptureRole}-capture.jpg`, { type: 'image/jpeg' });
+
+      const msg = getSuccessMsg(currentCaptureRole);
+
+      switch (currentCaptureRole) {
+        case 'student':
+          setStudentAadhaarImage(dataURL);
+          await uploadAadhaar(file, 'student', () => {}, setStudentExtractionSuccess, msg, dataURL);
+          break;
+        case 'father':
+          setFatherAadhaarImage(dataURL);
+          await uploadAadhaar(file, 'father', () => {}, setFatherExtractionSuccess, msg, dataURL);
+          break;
+        case 'mother':
+          setMotherAadhaarImage(dataURL);
+          await uploadAadhaar(file, 'mother', () => {}, setMotherExtractionSuccess, msg, dataURL);
+          break;
+        case 'leaving':
+          setLeavingCertImage(dataURL);
+          await uploadLeavingCert(file, dataURL);
+          break;
+      }
+    }, 'image/jpeg', 0.8);
+
+    setShowCamera(false);
+  };
+
   const formatDob = (dobString) => {
     if (!dobString) return '';
     const parts = dobString.split('/');
@@ -98,13 +278,13 @@ const Admissions = () => {
     return '';
   };
 
-  // --- Aadhaar Upload Handlers ---
-  const uploadAadhaar = async (file, role, setImage, setSuccess, successMsg) => {
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => setImage(e.target.result);
-    reader.readAsDataURL(file);
+  // --- Updated Aadhaar Upload Handler with dataURL support ---
+  const uploadAadhaar = async (file, role, setImage, setSuccess, successMsg, dataURL = null) => {
+    if (!dataURL) {
+      const reader = new FileReader();
+      reader.onload = (e) => setImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
 
     setLoading(true);
     setError('');
@@ -173,18 +353,18 @@ const Admissions = () => {
     }
   };
 
+  // --- Aadhaar File Upload Handlers (no change, but now without camera inputs) ---
   const handleStudentImageUpload = (e) => uploadAadhaar(e.target.files[0], 'student', setStudentAadhaarImage, setStudentExtractionSuccess, 'Aadhaar details extracted successfully!');
   const handleFatherImageUpload = (e) => uploadAadhaar(e.target.files[0], 'father', setFatherAadhaarImage, setFatherExtractionSuccess, "Father's Aadhaar details extracted successfully!");
   const handleMotherImageUpload = (e) => uploadAadhaar(e.target.files[0], 'mother', setMotherAadhaarImage, setMotherExtractionSuccess, "Mother's Aadhaar details extracted successfully!");
 
-  // --- Leaving Certificate Upload ---
-  const handleLeavingCertImageUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => setLeavingCertImage(e.target.result);
-    reader.readAsDataURL(file);
+  // --- Updated Leaving Certificate Upload with dataURL support ---
+  const uploadLeavingCert = async (file, dataURL = null) => {
+    if (!dataURL) {
+      const reader = new FileReader();
+      reader.onload = (e) => setLeavingCertImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
 
     setLoading(true);
     setError('');
@@ -268,15 +448,22 @@ const Admissions = () => {
     }
   };
 
-  // --- File Select Handlers ---
+  const handleLeavingCertImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => setLeavingCertImage(e.target.result);
+    reader.readAsDataURL(file);
+
+    await uploadLeavingCert(file);
+  };
+
+  // --- File Select Handlers (only for file upload now) ---
   const handleStudentFileSelect = (e) => handleStudentImageUpload(e);
-  const handleStudentCameraCapture = (e) => handleStudentImageUpload(e);
   const handleFatherFileSelect = (e) => handleFatherImageUpload(e);
-  const handleFatherCameraCapture = (e) => handleFatherImageUpload(e);
   const handleMotherFileSelect = (e) => handleMotherImageUpload(e);
-  const handleMotherCameraCapture = (e) => handleMotherImageUpload(e);
   const handleLeavingCertFileSelect = (e) => handleLeavingCertImageUpload(e);
-  const handleLeavingCertCameraCapture = (e) => handleLeavingCertImageUpload(e);
 
   // --- Navigation ---
   const handleNextStep1 = () => studentExtractionSuccess ? (setCurrentStep(2), setError('')) : setError('Please upload Aadhaar and ensure all details are extracted.');
@@ -447,7 +634,7 @@ const Admissions = () => {
                 </div>
 
                 <div className="upload-option-group">
-                  <label htmlFor="student-aadhaar-camera-capture" className="upload-option-label">
+                  <div className="upload-option-label" onClick={() => handleCameraCapture('student')} style={{ cursor: 'pointer' }}>
                     <div className="upload-option-card">
                       <div className="upload-option-icon">Camera</div>
                       <div className="upload-option-content">
@@ -456,8 +643,7 @@ const Admissions = () => {
                         <span className="upload-option-hint">Instant capture</span>
                       </div>
                     </div>
-                  </label>
-                  <input id="student-aadhaar-camera-capture" type="file" accept="image/*" capture="environment" onChange={handleStudentCameraCapture} className="aadhaar-file-input" />
+                  </div>
                 </div>
               </div>
 
@@ -590,13 +776,12 @@ const Admissions = () => {
                 </div>
 
                 <div className="upload-option-group">
-                  <label htmlFor="father-aadhaar-camera-capture" className="upload-option-label">
+                  <div className="upload-option-label" onClick={() => handleCameraCapture('father')} style={{ cursor: 'pointer' }}>
                     <div className="upload-option-card">
                       <div className="upload-option-icon">Camera</div>
                       <div className="upload-option-content"><h4>Take Photo</h4><p>Use camera</p></div>
                     </div>
-                  </label>
-                  <input id="father-aadhaar-camera-capture" type="file" accept="image/*" capture="environment" onChange={handleFatherCameraCapture} className="aadhaar-file-input" />
+                  </div>
                 </div>
               </div>
 
@@ -665,13 +850,12 @@ const Admissions = () => {
                 </div>
 
                 <div className="upload-option-group">
-                  <label htmlFor="mother-aadhaar-camera-capture" className="upload-option-label">
+                  <div className="upload-option-label" onClick={() => handleCameraCapture('mother')} style={{ cursor: 'pointer' }}>
                     <div className="upload-option-card">
                       <div className="upload-option-icon">Camera</div>
                       <div className="upload-option-content"><h4>Take Photo</h4><p>Use camera</p></div>
                     </div>
-                  </label>
-                  <input id="mother-aadhaar-camera-capture" type="file" accept="image/*" capture="environment" onChange={handleMotherCameraCapture} className="aadhaar-file-input" />
+                  </div>
                 </div>
               </div>
 
@@ -740,13 +924,12 @@ const Admissions = () => {
                 </div>
 
                 <div className="upload-option-group">
-                  <label htmlFor="leaving-cert-camera-capture" className="upload-option-label">
+                  <div className="upload-option-label" onClick={() => handleCameraCapture('leaving')} style={{ cursor: 'pointer' }}>
                     <div className="upload-option-card">
                       <div className="upload-option-icon">Camera</div>
                       <div className="upload-option-content"><h4>Take Photo</h4><p>Use camera</p></div>
                     </div>
-                  </label>
-                  <input id="leaving-cert-camera-capture" type="file" accept="image/*" capture="environment" onChange={handleLeavingCertCameraCapture} className="aadhaar-file-input" />
+                  </div>
                 </div>
               </div>
 
@@ -861,6 +1044,28 @@ const Admissions = () => {
               <button onClick={downloadIdCard} className="admission-btn admission-download-btn" disabled={loading}>
                 Download ID Card (PDF)
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Camera Modal */}
+        {showCamera && (
+          <div className="camera-modal-overlay" onClick={() => setShowCamera(false)}>
+            <div className="camera-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="camera-modal-header">
+                <h3>Fit the {getRoleDisplay(currentCaptureRole)} within the green box</h3>
+                <button onClick={() => setShowCamera(false)} className="camera-close-btn">Close</button>
+              </div>
+              <div className="camera-video-container">
+                <video ref={videoRef} autoPlay muted playsInline className="camera-video" />
+                <canvas ref={overlayRef} className="camera-overlay" />
+              </div>
+              <div className="camera-controls">
+                <button onClick={handleTakePhoto} className="capture-btn" disabled={loading}>
+                  {loading ? 'Capturing...' : 'Capture Photo'}
+                </button>
+                <button onClick={() => setShowCamera(false)} className="cancel-btn">Cancel</button>
+              </div>
             </div>
           </div>
         )}
