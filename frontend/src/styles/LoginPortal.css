@@ -571,7 +571,7 @@
   }
   
   .school-brand {
-    flex-direction: column;
+    flex-direction: row;
     text-align: center;
     gap: 1rem;
   }

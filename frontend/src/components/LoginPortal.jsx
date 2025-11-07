@@ -51,7 +51,7 @@ const LoginPortal = () => {
             </div>
             <div className="school-info">
               <h1>SmartFlows Academy</h1>
-              <p>Empowering Future Leaders • Established 1985</p>
+              {/* <p>Empowering Future Leaders • Established 1985</p> */}
             </div>
           </div>
         </div>
