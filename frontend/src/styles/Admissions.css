@@ -1008,7 +1008,7 @@
 /* Optional: Tablet breakpoint for medium sizes */
 @media (max-width: 768px) and (min-width: 481px) {
   .camera-video-container {
-    height: 320px; /* *** TABLET HEIGHT: Adjust here if needed (e.g., 280px for shorter) */
+    height: 400px; /* *** TABLET HEIGHT: Adjust here if needed (e.g., 280px for shorter) */
   }
 }
 
